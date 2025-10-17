@@ -1,0 +1,102 @@
+:root{
+  --bg:#0a0c0f;
+  --ink:#f6f5f2;
+  --muted:#cbbfb3;
+  --orange:#ff6a00;
+  --orange-d:#c74f00;
+  --card:#131720;
+  --grid:#1f2633;
+  --box:#2a3242;
+  --error:#ef4444;
+  --ok:#10b981;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background: radial-gradient(1200px 800px at 50% -10%, #151a23 0%, var(--bg) 60%);
+  color:var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Start overlay (button only) */
+.overlay{
+  position:fixed; inset:0; display:grid; place-items:center; z-index:10;
+  background:rgba(0,0,0,.9);
+}
+.hidden{display:none !important}
+.btn{
+  border:0; border-radius:12px; padding:12px 16px; font-weight:800; cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.btn.big{padding:18px 24px; font-size:1.1rem}
+.btn-primary{background:linear-gradient(180deg,var(--orange),var(--orange-d)); color:#0b0b0b;
+  box-shadow:0 12px 36px rgba(255,106,0,.35)}
+.btn-primary:hover{transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(1px)}
+.btn-ghost{background:#1a202c; color:var(--ink); border:1px solid #2b3342}
+
+/* Festive frame */
+.festive-frame .rim{
+  position:fixed; left:0; right:0; text-align:center; opacity:.2; pointer-events:none;
+  user-select:none; font-size:18px; letter-spacing:6px;
+}
+.festive-frame .top{top:4px}
+.festive-frame .bottom{bottom:4px}
+.festive-frame .left{
+  top:50%; transform:translateY(-50%); left:6px; right:auto; writing-mode:vertical-rl; text-orientation:upright;
+}
+.festive-frame .right{
+  top:50%; transform:translateY(-50%); right:6px; left:auto; writing-mode:vertical-rl; text-orientation:upright;
+}
+
+/* Layout */
+.top{padding:20px 16px; text-align:center}
+.top h1{margin:6px 0 4px; text-shadow:0 6px 28px rgba(255,106,0,.2)}
+.tag{color:var(--muted); margin:0}
+
+.wrap{
+  max-width:760px; margin:0 auto 36px; padding:0 16px;
+  display:grid; gap:14px; place-items:center;
+}
+
+/* Sudoku grid */
+.grid{
+  display:grid; grid-template-columns:repeat(9, min(56px, 10.5vw));
+  gap:2px; padding:10px; background:var(--grid); border-radius:12px;
+  box-shadow:0 18px 60px rgba(0,0,0,.55), inset 0 0 0 1px #2a3140;
+}
+.cell{
+  width:100%; aspect-ratio:1/1; display:grid; place-items:center;
+  background:var(--card); color:var(--ink); font-size:22px; font-weight:700;
+  border:1px solid #232a39;
+}
+.cell input{
+  width:100%; height:100%; text-align:center; background:transparent; color:inherit;
+  border:0; outline:none; font:inherit;
+}
+.cell.prefill{background:var(--box); color:#f0e7df}
+.cell.error{box-shadow: inset 0 0 0 2px var(--error)}
+.cell.valid{box-shadow: inset 0 0 0 2px var(--ok)}
+
+.grid .cell:nth-child(3n+1){border-left-width:2px}
+.grid .cell:nth-child(3n){border-right-width:2px}
+.grid .cell{border-top-width:1px; border-bottom-width:1px}
+.grid .cell:nth-child(n+1):nth-child(-n+9){border-top-width:2px}
+.grid .cell:nth-child(n+73):nth-child(-n+81){border-bottom-width:2px}
+.grid .cell:nth-child(9n+1){border-left-width:2px}
+.grid .cell:nth-child(9n){border-right-width:2px}
+.grid .cell{border-color:#2a3140}
+
+/* Panel */
+.panel{
+  display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap;
+}
+.status{color:var(--muted)}
+
+/* Success dialog */
+dialog{
+  border:0; border-radius:14px; background:#0f1420; color:var(--ink); padding:22px;
+  width:min(500px, 92vw); text-align:center; box-shadow:0 30px 80px rgba(0,0,0,.6)
+}
+.code-row{display:flex; gap:8px; margin:10px 0}
+#codeField{flex:1; padding:10px 12px; border-radius:10px; border:1px solid #2b3648; background:#0b101a; color:var(--ink)}
