@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>🎃 Halloween Sudoku</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Start overlay (button only) -->
+  <div id="startOverlay" class="overlay">
+    <button id="startBtn" class="btn btn-primary big">Start the Challenge</button>
+  </div>
+
+  <!-- Frame / festive border -->
+  <div class="festive-frame" aria-hidden="true">
+    <div class="rim top">🕷️🕸️🎃🦇🕯️🧟‍♂️🧛‍♂️👻🕷️🕸️🎃🦇🕯️🧟‍♂️🧛‍♂️👻</div>
+    <div class="rim left">🕷️<br>🕸️<br>🎃<br>🦇<br>🕯️<br>👻<br>🧟‍♂️<br>🧛‍♂️</div>
+    <div class="rim right">🕷️<br>🕸️<br>🎃<br>🦇<br>🕯️<br>👻<br>🧟‍♂️<br>🧛‍♂️</div>
+    <div class="rim bottom">🕷️🕸️🎃🦇🕯️🧟‍♂️🧛‍♂️👻🕷️🕸️🎃🦇🕯️🧟‍♂️🧛‍♂️👻</div>
+  </div>
+
+  <main id="app" class="hidden">
+    <header class="top">
+      <h1>🦇 Halloween Sudoku 🕸️</h1>
+      <p class="tag">Fill the grid so each row, column, and 3×3 box contains digits 1–9.</p>
+    </header>
+
+    <section class="wrap">
+      <div id="grid" class="grid" role="grid" aria-label="Sudoku board"></div>
+
+      <div class="panel">
+        <button id="checkBtn" class="btn btn-ghost">Check</button>
+        <button id="hintBtn"  class="btn btn-ghost">Hint</button>
+        <span id="status" class="status">Good luck… 🎃</span>
+      </div>
+    </section>
+  </main>
+
+  <!-- Success modal -->
+  <dialog id="successDlg">
+    <h3>✅ Puzzle Complete!</h3>
+    <p>Passcode for Clue 15:</p>
+    <div class="code-row">
+      <input id="codeField" value="COBWEBCONSPIRACY" readonly />
+      <button id="copyBtn" class="btn btn-primary">Copy code</button>
+    </div>
+    <button id="okBtn" class="btn btn-ghost">Close</button>
+  </dialog>
+
+  <script src="script.js"></script>
+</body>
+</html>
