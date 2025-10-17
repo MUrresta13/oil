@@ -1,25 +1,16 @@
-// Medium puzzle (classic)
+// ====== Sudoku: Medium puzzle ======
 const PUZZLE = [
   [5,3,0,0,7,0,0,0,0],
   [6,0,0,1,9,5,0,0,0],
   [0,9,8,0,0,0,0,6,0],
   [8,0,0,0,6,0,0,0,3],
-  [4,0,8,0,0,3,0,0,1],
+  [4,0,0,8,0,3,0,0,1],
   [7,0,0,0,2,0,0,0,6],
   [0,6,0,0,0,0,2,8,0],
   [0,0,0,4,1,9,0,0,5],
   [0,0,0,0,8,0,0,7,9]
 ];
-// Correct solution (for validation)
-const SOLUTION = [
-  [5,3,4,6,7,8,9,1,2],
-  [6,7,2,1,9,5,3,4,8],
-  [1,9,8,3,4,2,5,6,7],
-  [8,5,9,7,6,1,4,2,3],
-  [4,2,8,5,3,3,7,9,1], // <-- intentional wrong line? wait, fix!
-];
 
-// Fix the solution (typo above corrected)
 const SOL = [
   [5,3,4,6,7,8,9,1,2],
   [6,7,2,1,9,5,3,4,8],
@@ -32,6 +23,7 @@ const SOL = [
   [3,4,5,2,8,6,1,7,9]
 ];
 
+// ====== DOM ======
 const grid = document.getElementById('grid');
 const statusEl = document.getElementById('status');
 const checkBtn = document.getElementById('checkBtn');
@@ -46,14 +38,14 @@ const startOverlay = document.getElementById('startOverlay');
 const startBtn = document.getElementById('startBtn');
 const app = document.getElementById('app');
 
-// Start overlay -> show game
+// ====== Start overlay -> show game ======
 startBtn.addEventListener('click', () => {
   startOverlay.classList.add('hidden');
   app.classList.remove('hidden');
 });
 
-// Build grid
-const inputs = []; // 2D array mirroring board inputs
+// ====== Build grid ======
+const inputs = []; // matrix of input elements or null for prefill cells
 function buildGrid(){
   grid.innerHTML = '';
   for (let r=0;r<9;r++){
@@ -61,11 +53,22 @@ function buildGrid(){
     for (let c=0;c<9;c++){
       const cell = document.createElement('div');
       cell.className = 'cell';
+
+      // Emphasize 3x3 boxes (thicker borders)
+      if (r % 3 === 0) cell.classList.add('box-top');
+      if (r % 3 === 2) cell.classList.add('box-bottom');
+      if (c % 3 === 0) cell.classList.add('box-left');
+      if (c % 3 === 2) cell.classList.add('box-right');
+
+      // Subtle alternating tint for sub-grids
+      const boxIndex = Math.floor(r/3)*3 + Math.floor(c/3);
+      if (boxIndex % 2 === 1) cell.classList.add('box-alt');
+
       const val = PUZZLE[r][c];
       if (val !== 0){
         cell.classList.add('prefill');
         cell.textContent = val;
-        inputs[r][c] = null; // locked cell
+        inputs[r][c] = null;
       } else {
         const input = document.createElement('input');
         input.setAttribute('inputmode','numeric');
@@ -76,7 +79,6 @@ function buildGrid(){
           e.target.value = v.slice(0,1);
           clearMarks();
           statusEl.textContent = 'Keep going… 🕷️';
-          // Optional auto-check completion
           if (isComplete()){
             if (isCorrect()){
               revealSuccess();
@@ -92,42 +94,35 @@ function buildGrid(){
       grid.appendChild(cell);
     }
   }
+  updateHintLabel();
 }
 
+// ====== Helpers ======
 function clearMarks(){
   grid.querySelectorAll('.cell').forEach(c=>c.classList.remove('error','valid'));
 }
-
-function isComplete(){
-  // every empty cell must have a digit 1-9
-  for (let r=0;r<9;r++){
-    for (let c=0;c<9;c++){
-      if (PUZZLE[r][c]===0){
-        const v = getVal(r,c);
-        if (!v) return false;
-      }
-    }
-  }
-  return true;
-}
 function getVal(r,c){
-  if (PUZZLE[r][c]!==0) return PUZZLE[r][c];
+  if (PUZZLE[r][c] !== 0) return PUZZLE[r][c];
   const el = inputs[r][c];
   const v = el && el.value ? parseInt(el.value,10) : 0;
   return v || 0;
 }
-
-function isCorrect(){
-  // compare to SOL
+function isComplete(){
   for (let r=0;r<9;r++){
     for (let c=0;c<9;c++){
-      const v = getVal(r,c);
-      if (v !== SOL[r][c]) return false;
+      if (PUZZLE[r][c]===0 && !getVal(r,c)) return false;
     }
   }
   return true;
 }
-
+function isCorrect(){
+  for (let r=0;r<9;r++){
+    for (let c=0;c<9;c++){
+      if (getVal(r,c) !== SOL[r][c]) return false;
+    }
+  }
+  return true;
+}
 function markErrors(){
   for (let r=0;r<9;r++){
     for (let c=0;c<9;c++){
@@ -140,6 +135,41 @@ function markErrors(){
   }
 }
 
+// ====== Hint (3 uses max) ======
+let hintsLeft = 3;
+function updateHintLabel(){
+  hintBtn.textContent = `Hint (${hintsLeft})`;
+  if (hintsLeft <= 0){
+    hintBtn.disabled = true;
+    hintBtn.classList.add('btn-disabled');
+  }
+}
+hintBtn.addEventListener('click', ()=>{
+  if (hintsLeft <= 0) return;
+
+  const empties = [];
+  for (let r=0;r<9;r++){
+    for (let c=0;c<9;c++){
+      if (PUZZLE[r][c]===0 && !getVal(r,c)) empties.push([r,c]);
+    }
+  }
+  if (!empties.length) return;
+
+  const [r,c] = empties[Math.floor(Math.random()*empties.length)];
+  inputs[r][c].value = String(SOL[r][c]);
+  inputs[r][c].parentElement.classList.add('valid');
+
+  hintsLeft -= 1;
+  updateHintLabel();
+
+  statusEl.textContent = hintsLeft > 0
+    ? `Hint placed. 🕯️  (${hintsLeft} left)`
+    : 'No hints remaining. 🧛';
+
+  if (isComplete() && isCorrect()) revealSuccess();
+});
+
+// ====== Check ======
 checkBtn.addEventListener('click', ()=>{
   clearMarks();
   if (!isComplete()){
@@ -154,20 +184,7 @@ checkBtn.addEventListener('click', ()=>{
   }
 });
 
-hintBtn.addEventListener('click', ()=>{
-  // fill 1 random empty cell with the correct value
-  const empties = [];
-  for (let r=0;r<9;r++) for (let c=0;c<9;c++)
-    if (PUZZLE[r][c]===0 && !getVal(r,c)) empties.push([r,c]);
-  if (!empties.length) return;
-  const [r,c] = empties[Math.floor(Math.random()*empties.length)];
-  inputs[r][c].value = String(SOL[r][c]);
-  inputs[r][c].parentElement.classList.add('valid');
-  statusEl.textContent = 'Hint placed. 🕯️';
-  if (isComplete() && isCorrect()) revealSuccess();
-});
-
-// Success dialog
+// ====== Success dialog ======
 function revealSuccess(){
   statusEl.textContent = 'Perfect! 🎃';
   successDlg.showModal();
